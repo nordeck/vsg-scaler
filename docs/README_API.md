@@ -204,7 +204,7 @@ curl -X POST https://jitsi.nordeck.corp/scaler/instance \
 
 ```json
 {
-  "ip": "$INSTANCE_IP",
+  "host": "$HOST_NAME",
   "reason": "$REASON"
 }
 ```
@@ -231,7 +231,7 @@ Possible reasons:
 ```bash
 REQUEST_DATA=$(cat <<EOF
 {
-  "ip": "$INSTANCE_IP",
+  "host": "$HOST_NAME",
   "reason": "$REASON"
 }
 EOF
