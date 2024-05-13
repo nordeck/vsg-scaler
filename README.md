@@ -27,7 +27,7 @@ Assumed that you have already a working standalone `Jitsi` setup with
 
 ### Download
 
-Check the available version
+Check the available versions
 [here](https://github.com/nordeck/vsg-scaler/releases).
 
 ```bash
