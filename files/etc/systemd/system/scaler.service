@@ -1,0 +1,15 @@
+[Unit]
+Description=Scaler
+After=network-online.target
+
+[Service]
+User=scaler
+Group=scaler
+Environment=DENO_TLS_CA_STORE=system
+WorkingDirectory=/home/scaler/app
+ExecStart=deno run --allow-net /home/scaler/app/scaler.ts
+Restart=always
+RestartSec=2s
+
+[Install]
+WantedBy=multi-user.target
