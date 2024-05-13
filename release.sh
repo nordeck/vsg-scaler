@@ -29,6 +29,6 @@ $LOCAL_DENO lint $BASEDIR/files/home/scaler/app/
 $LOCAL_DENO check $BASEDIR/files/home/scaler/app/scaler.ts
 
 # nginx-jwt-auth
-mkdir $BASEDIR/files/usr/local/share
+mkdir -p $BASEDIR/files/usr/local/share
 wget -O $BASEDIR/files/usr/local/share/nginx-jwt-auth.lua \
     https://raw.githubusercontent.com/nordeck/nginx-jwt-auth/main/nginx-jwt-auth.lua
