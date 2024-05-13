@@ -1,0 +1,84 @@
+#!/usr/bin/bash
+set -e
+
+# ------------------------------------------------------------------------------
+# scale-up
+# ------------------------------------------------------------------------------
+# This script runs in the Jitsi/Jicofo server. It is triggered by a systemd
+# timer every 60 seconds. It sends "add instance" request to the scaler service
+# if the number of required available instances is less than MIN_REQUIRED.
+#
+# It doesn't send "add instance" request if the number of total instances is
+# more than MAX_ALLOWED even there is no available instance.
+# ------------------------------------------------------------------------------
+BASEDIR=$(dirname $0)
+SCALER="https://jitsi.nordeck.corp/scaler"
+JICOFO="http://127.0.0.1:8888/stats"
+ASAP_KEY="$BASEDIR/asap.key"
+
+# token
+IAT=$(date +"%s")
+(( EXP = IAT + 60 ))
+
+TOKEN_DATA=$(cat <<EOF
+{
+  "sub": "scaler",
+  "iat": $IAT,
+  "exp": $EXP
+}
+EOF
+)
+
+HEADER=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | \
+    tr '+/' '-_' | tr -d '=\n')
+PAYLOAD=$(echo -n $TOKEN_DATA | base64 | tr '+/' '-_' | tr -d '=\n')
+SIGN=$(echo -n "$HEADER.$PAYLOAD" | \
+    openssl dgst -sha256 -binary -sign $ASAP_KEY | \
+    openssl enc -base64 | tr '+/' '-_' | tr -d '=\n')
+
+# get limit (minimum)
+MIN_REQUIRED=$(curl -k -sL $SCALER/min \
+    -H "Authorization: Bearer $HEADER.$PAYLOAD.$SIGN" | \
+    egrep -E '^[0-9]+$')
+[[ -z "$MIN_REQUIRED" ]] && exit
+
+# get limit (maximum)
+MAX_ALLOWED=$(curl -k -sL $SCALER/max \
+    -H "Authorization: Bearer $HEADER.$PAYLOAD.$SIGN" | \
+    egrep -E '^[0-9]+$')
+[[ -z "$MAX_ALLOWED" ]] && exit
+
+# get current status (total)
+TOTAL=$(curl -s $JICOFO | jq '.sip_jibri_detector.count' | egrep -E '^[0-9]+$')
+[[ -z "$TOTAL" ]] && exit
+
+# get current status (avaiable)
+AVAILABLE=$(curl -s $JICOFO | jq '.sip_jibri_detector.available' | \
+    egrep -E '^[0-9]+$')
+[[ -z "$AVAILABLE" ]] && exit
+
+cat <<EOF
+Current total: $TOTAL, \
+Current available: $AVAILABLE, \
+Max allowed total: $MAX_ALLOWED. \
+Min required available: $MIN_REQUIRED
+EOF
+
+# don't add new instances if the number of total instances is more than MAX
+# even there is no available instance
+if [[ "$TOTAL" -ge "$MAX_ALLOWED" ]]; then
+    echo "no more space for a new instance, no action"
+    exit
+fi
+
+# add a new instance if needed
+if [[ "$AVAILABLE" -lt "$MIN_REQUIRED" ]]; then
+    echo "send 'add instance' request"
+    curl -k -sL $SCALER/instance -X POST \
+        -H "Authorization: Bearer $HEADER.$PAYLOAD.$SIGN" \
+        -H "Content-Type: application/json" \
+        --data '{ "instance_type": "video-sip-gateway" }'
+    exit
+fi
+
+echo "no need for a new instance, no action"
