@@ -10,7 +10,7 @@ BASEDIR=$(dirname $0)
 mkdir -p $BASEDIR/files/usr/local/bin
 wget -T 30 -O $BASEDIR/files/usr/local/bin/deno.zip \
     https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip
-unzip $BASEDIR/files/usr/local/bin/deno.zip -d /tmp
+unzip -o $BASEDIR/files/usr/local/bin/deno.zip -d /tmp
 
 echo
 LOCAL_DENO=/tmp/deno
