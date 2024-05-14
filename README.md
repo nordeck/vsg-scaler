@@ -31,7 +31,7 @@ Check the available versions
 [here](https://github.com/nordeck/vsg-scaler/releases).
 
 ```bash
-VERSION="v20240513"
+VERSION="v20240514"
 
 wget https://github.com/nordeck/vsg-scaler/archive/refs/tags/$VERSION.tar.gz
 tar zxf $VERSION.tar.gz
