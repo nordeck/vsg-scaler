@@ -9,12 +9,12 @@ function on_exit {
 
     if [[ "$COMPLETED" != true ]]; then
         echo "Something went wrong. Not completed!"
-	echo
+        echo
 
         exit 1
     else
         echo "Completed successfully!"
-	echo
+        echo
     fi
 }
 
