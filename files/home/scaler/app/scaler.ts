@@ -13,8 +13,8 @@
 //     curl http://127.0.0.1:9000/scaler/max
 //     curl http://127.0.0.1:9000/scaler/bulk-max
 // -----------------------------------------------------------------------------
-import { serve } from "https://deno.land/std@0.211.0/http/server.ts";
-import { STATUS_CODE } from "https://deno.land/std@0.211.0/http/status.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { STATUS_CODE } from "https://deno.land/std@0.224.0/http/status.ts";
 import { DEBUG, HOSTNAME, JICOFO, PORT, PRE } from "./config.ts";
 import { addHost, removeHost } from "./lifecycle.ts";
 

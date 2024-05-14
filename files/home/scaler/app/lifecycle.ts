@@ -3,7 +3,7 @@
 //
 // Methods for the lifecycle management API
 // -----------------------------------------------------------------------------
-import { encodeBase64 } from "https://deno.land/std@0.211.0/encoding/base64.ts";
+import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 import { DEBUG, LCM_NODES, LCM_TOKEN, LCM_USERNAME } from "./config.ts";
 
 // -----------------------------------------------------------------------------
