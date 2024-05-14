@@ -4,20 +4,17 @@
 // Methods for the lifecycle management API
 // -----------------------------------------------------------------------------
 import { encodeBase64 } from "https://deno.land/std@0.211.0/encoding/base64.ts";
-import {
-  DEBUG,
-  LCM_NODES,
-  LCM_TOKEN,
-  LCM_URL,
-  LCM_USERNAME,
-} from "./config.ts";
+import { DEBUG, LCM_NODES, LCM_TOKEN, LCM_USERNAME } from "./config.ts";
 
 // -----------------------------------------------------------------------------
 // removeHost
 // -----------------------------------------------------------------------------
 export async function removeHost(host: string): Promise<void> {
   try {
-    const endpoint = `${LCM_URL}/api/hosts/${host}`;
+    const numberOfNodes = LCM_NODES.length;
+    const randomIndex = Math.floor(Math.random() * numberOfNodes);
+    const node = LCM_NODES[randomIndex];
+    const endpoint = `${node}/api/hosts/${host}`;
     const data = {
       "host": {},
     };
@@ -40,16 +37,14 @@ export async function removeHost(host: string): Promise<void> {
 
 // -----------------------------------------------------------------------------
 // addHost
-//
-// what is the correct place to put the selected node?
 // -----------------------------------------------------------------------------
 export async function addHost(instanceType: string): Promise<void> {
   try {
     const numberOfNodes = LCM_NODES.length;
-    const selectedNode = Math.floor(Math.random() * numberOfNodes);
-    const endpoint = `${LCM_URL}/api/hosts`;
+    const randomIndex = Math.floor(Math.random() * numberOfNodes);
+    const node = LCM_NODES[randomIndex];
+    const endpoint = `${node}/api/hosts`;
     const data = {
-      "node": LCM_NODES[selectedNode],
       "host": {},
     };
     const credential = encodeBase64(`${LCM_USERNAME}:${LCM_TOKEN}`);

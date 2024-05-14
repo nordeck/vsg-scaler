@@ -14,12 +14,11 @@ export const DEBUG = true;
 export const JICOFO = "http://127.0.0.1:8888/stats";
 
 // Lifecycle management
-export const LCM_URL = "http://172.17.17.101";
 export const LCM_USERNAME = "username";
 export const LCM_TOKEN = "token-content";
 export const LCM_NODES = [
-  "node1",
-  "node2",
-  "node3",
-  "node4",
+  "http://127.0.0.1:9101",
+  "http://127.0.0.1:9102",
+  "http://127.0.0.1:9103",
+  "http://127.0.0.1:9104",
 ];
