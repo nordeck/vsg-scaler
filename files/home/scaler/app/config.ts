@@ -14,6 +14,8 @@ export const DEBUG = true;
 export const JICOFO = "http://127.0.0.1:8888/stats";
 
 // Lifecycle management
+// Scaler selects a random node for each request but uses the same username and
+// token for all.
 export const LCM_USERNAME = "username";
 export const LCM_TOKEN = "token-content";
 export const LCM_NODES = [
