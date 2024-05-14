@@ -47,7 +47,7 @@ bash install.sh
 
 ### Configuration
 
-Set `LCM_URL`, `LCM_USERNAME` and `LCM_TOKEN` in `/home/scaler/app/config.ts`
+Set `LCM_NODES`, `LCM_USERNAME` and `LCM_TOKEN` in `/home/scaler/app/config.ts`
 according to the environment. These values are related with the lifecycle
 management system.
 

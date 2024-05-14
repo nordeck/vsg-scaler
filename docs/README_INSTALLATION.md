@@ -33,9 +33,9 @@ mkdir -p /home/scaler/app
 cp config.ts lifecycle.ts scaler.ts /home/scaler/app/
 ```
 
-- Set `LCM_URL`, `LCM_USERNAME` and `LCM_TOKEN` in `/home/scaler/app/config.ts`
-  according to the environment. These values are related with the lifecycle
-  management system.
+- Set `LCM_NODES`, `LCM_USERNAME` and `LCM_TOKEN` in
+  `/home/scaler/app/config.ts` according to the environment. These values are
+  related with the lifecycle management system.
 
 - Customize `addHost` and `deleteHost` methods in
   `/home/scaler/app/lifecycle.ts` according to your API if needed. For now, the
