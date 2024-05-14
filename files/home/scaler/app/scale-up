@@ -48,6 +48,12 @@ MAX_ALLOWED=$(curl -k -sL $SCALER/max \
     egrep -E '^[0-9]+$')
 [[ -z "$MAX_ALLOWED" ]] && exit
 
+# get the maximum bulk size
+BULK_MAX=$(curl -k -sL $SCALER/bulk-max \
+    -H "Authorization: Bearer $HEADER.$PAYLOAD.$SIGN" | \
+    egrep -E '^[0-9]+$')
+[[ -z "$BULK_MAX" ]] && exit
+
 # get current status (total)
 TOTAL=$(curl -s $JICOFO | jq '.sip_jibri_detector.count' | egrep -E '^[0-9]+$')
 [[ -z "$TOTAL" ]] && exit
@@ -60,8 +66,9 @@ AVAILABLE=$(curl -s $JICOFO | jq '.sip_jibri_detector.available' | \
 cat <<EOF
 Current total: $TOTAL, \
 Current available: $AVAILABLE, \
-Max allowed total: $MAX_ALLOWED. \
-Min required available: $MIN_REQUIRED
+Max allowed total: $MAX_ALLOWED, \
+Min required available: $MIN_REQUIRED, \
+Allowed bulk size: $BULK_MAX
 EOF
 
 # don't add new instances if the number of total instances is more than MAX
@@ -71,14 +78,26 @@ if [[ "$TOTAL" -ge "$MAX_ALLOWED" ]]; then
     exit
 fi
 
-# add a new instance if needed
-if [[ "$AVAILABLE" -lt "$MIN_REQUIRED" ]]; then
-    echo "send 'add instance' request"
+# don't add new instances if the number of available instances is more than
+# MIN_REQUIRED
+if [[ "$AVAILABLE" -ge "$MIN_REQUIRED" ]]; then
+    echo "no need for a new instance, no action"
+    exit
+fi
+
+# the number of required instances
+(( bulk = MIN_REQUIRED - AVAILABLE))
+
+# limit the bulk size if it is more than BULK_MAX
+# we dont want to send many requests at a time to not overload LCM
+[[ "$bulk" -gt "$BULK_MAX" ]] && bulk="$BULK_MAX"
+
+# send add instance requests
+for i in $(seq 1 $bulk); do
+    echo "send an add instance request, #$i"
     curl -k -sL $SCALER/instance -X POST \
         -H "Authorization: Bearer $HEADER.$PAYLOAD.$SIGN" \
         -H "Content-Type: application/json" \
         --data '{ "instance_type": "video-sip-gateway" }'
-    exit
-fi
-
-echo "no need for a new instance, no action"
+    sleep 2
+done
